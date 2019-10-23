@@ -1,0 +1,198 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-reader.ss" "lang")((modname GUILenguajesBlackJack) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+
+;#lang racket
+;librerias
+(require racket/gui)
+(require (lib "graphics.ss" "graphics")) 
+(open-graphics)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Make a frame initial by instantiating the frame% class
+(define frame (new frame% [label "Example"]))
+ 
+; Make a static text message in the frame
+(define msjestatico (new message% [parent frame]
+                          [label "Elija la cantidad de jugadores"]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Botones de la pantalla inicial donde
+; se elige la cantidad de jugadores
+; Make a button in the frame1 para elegir 1 jugador
+(new button% [parent frame]
+             [label "1 Jugador"]
+             ; Callback procedure for a button click: 
+             [callback (lambda (button event)                    
+                         ;(send accion set-label "Escriba el nombre del jugador")
+                         (send frame show #f)
+                         (ventana-nombre-jugadores1 1)
+                         )])
+; Make a button in the frame para elegir 2 jugadores
+(new button% [parent frame]
+             [label "2 Jugadores"]
+             ; Callback procedure for a button click: 
+             [callback (lambda (button event)   
+                         (send frame show #f)
+                         (ventana-nombre-jugadores2 2)
+                         )])
+; Make a button in the frame para elegir 3 jugadores
+(new button% [parent frame]
+             [label "3 Jugadores"]
+             ; Callback procedure for a button click: 
+             [callback (lambda (button event)    
+                         (send frame show #f)
+                         (ventana-nombre-jugadores3 3)
+                         )])
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define (ventana-nombre-jugadores1 cantjugadores)
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     ; Make a frame by instantiating the frame% class
+     ; Frame para los text field de nombre de los jugadores
+     (define frame3 (new frame% [label "Nombres de jugadores "]))
+    
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+     ; Text field para el nombre del o los jugadores
+     (define text-field-jug1
+          (new text-field%
+            (label "Nombre del jugador 1: ")
+            (parent frame3)
+            (init-value "")) )
+
+     ; Make a button in the frame  
+     (new button% [parent frame3]
+             [label "Continuar"]
+             ; Callback procedure for a button click: 
+             [callback (lambda (button event)
+                         (juego-blackjack  (list (send text-field-jug1 get-value)) 1))])
+  
+     ; Show the frame by calling its show method
+     (send frame3 show #t)
+)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define (ventana-nombre-jugadores2 cantjugadores)
+     ; Make a frame by instantiating the frame% class
+     ; Frame para los text field de nombre de los jugadores
+     (define frame3 (new frame% [label "Nombres de jugadores "]))
+
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+     ; Text field para el nombre del o los jugadores      
+     (define text-field-jug1    
+          (new text-field%
+            (label "Nombre del jugador 1: ")
+            (parent frame3)
+            (init-value "")) )
+     (define text-field-jug2
+          (new text-field%
+            (label "Nombre del jugador 2: ")
+            (parent frame3)
+            (init-value "")))       
+
+     ; Make a button in the frame  
+     (new button% [parent frame3]
+             [label "Continuar"]
+             ; Callback procedure for a button click: 
+             [callback (lambda (button event)
+                         (juego-blackjack  (list (send text-field-jug1 get-value) (send text-field-jug2 get-value)) 2))])
+
+     ; Show the frame by calling its show method 
+     (send frame3 show #t)
+)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; funcion que abre la ventana con textfield para escribir nombre de jugadores
+(define (ventana-nombre-jugadores3 cantjugadores)
+     ; Make a frame by instantiating the frame% class
+     ; Frame para los text field de nombre de los jugadores
+     (define frame3 (new frame% [label "Nombres de jugadores "]))
+
+     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+     ; Text field para el nombre del o los jugadores
+     (define text-field-jug1    
+          (new text-field%
+            (label "Nombre del jugador 1: ")
+            (parent frame3)
+            (init-value "")))
+  
+     (define text-field-jug2
+          (new text-field%
+            (label "Nombre del jugador 2: ")
+            (parent frame3)
+            (init-value "")))
+  
+     (define text-field-jug3
+          (new text-field%
+            (label "Nombre del jugador 3: ")
+            (parent frame3)
+            (init-value "")))
+
+     ; crea un boton para continuar
+     (new button% [parent frame3]
+             [label "Continuar"]
+             ; Callback procedure for a button click: 
+             [callback (lambda (button event)
+                         (juego-blackjack  (list (send text-field-jug1 get-value)  (send text-field-jug2 get-value) (send text-field-jug3 get-value)) 3))])
+
+     ; Show the frame by calling its show method
+     (send frame3 show #t)
+)
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;FUNCION PRINCIPAL DEL JUEGO;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;la funcion principal del juego
+;recibe una lista con los nombres y un numero con la cantidad de jugadores
+(define (juego-blackjack listaNombres cantJugadores) 
+   ;::::::::::::::::::::::::::::::
+   ;define y abre la ventana principal del juego
+   (define ventana (open-viewport "ventana" 1040 720))
+   ;color de "ventana" 
+   ((draw-viewport ventana) "black")
+   ;:::::::::::::::::::::
+
+   ;define la ventana (llevará el fondo)
+   (define ventana2 (open-pixmap "eso no importa!" 1040 720 #|tamaño de la ventana|#))
+   ;:::::::::::::
+   ;adicionar fondo a ventana
+   ((draw-pixmap ventana2) "fondo.png" (make-posn 0.0 0.0) "black")
+   ;((draw-pixmap ventana2) "cartas/card-0-0.png" (make-posn 485 600) "black")
+   ;:::::::::
+   ;copiamos el contenido de una ventana2 a ventana 
+   (copy-viewport ventana2 ventana)
+  
+   
+   ;muestra los nombres del o los jugadores y crupier
+   ((draw-string ventana2) (make-posn 500 20)"Crupier""red")
+   (cond
+     ((equal? cantJugadores 1) ((draw-string ventana2) (make-posn 485 550)(car listaNombres)"red")) ;primer nombre
+     
+     ((equal? cantJugadores 2)
+                               ((draw-string ventana2) (make-posn 485 550)(car listaNombres)"red");primer nombre 
+                               ((draw-string ventana2) (make-posn 20 380)(car (cdr listaNombres))"red"));segundo nombre
+                                    
+     ((equal? cantJugadores 3) ((draw-string ventana2) (make-posn 485 550)(car listaNombres)"red");primer nombre
+                               ((draw-string ventana2) (make-posn 40 380)(car (cdr listaNombres))"red");segundo nombre
+                               ((draw-string ventana2) (make-posn 900 380)(car (cdr (cdr listaNombres)))"red")));tercer nombre
+   
+   
+   ;:::::::::::::::::::::::::::::::::::::::::::::::
+   ;actualiza la ventana con los nuevos cambios 
+   (copy-viewport ventana2 ventana)
+   ;::::::::::::::::::::::::::::::::::::::::::::::::::
+  
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+; Show the frame by calling its show method
+(send frame show #t)
