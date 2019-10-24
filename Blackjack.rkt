@@ -127,6 +127,6 @@
        (else
         "Hay más jugadores de los permitidos en Blackjack")))
        
-
+(provide (all-defined-out))
 
                                

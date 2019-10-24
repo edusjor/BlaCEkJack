@@ -1,11 +1,10 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
 #reader(lib "htdp-intermediate-reader.ss" "lang")((modname BlaCEkJack) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
-;#lang racket
-
 ;librerias
 (require racket/gui)
-(require (lib "graphics.ss" "graphics")) 
+(require (lib "graphics.ss" "graphics"))
+(require "Blackjack.rkt")
 (open-graphics)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -314,7 +313,7 @@
   ;Funcion que tiene control de cada click
   ;La listaconinformacion es una lista donde se guarda la info de cada jugador necesaria para ir verificando
   ;en cada turno hasta que alguien gane o pierda
-  (define (control click listaconinformacion) 
+  (define (control click matriz puntuacion cantPlantes) 
     (cond
       
       ;***************Botones Jugador 1**************************************
@@ -323,9 +322,9 @@
             (>= (posn-y (mouse-click-posn click))350)  (<= (posn-y (mouse-click-posn click))380))
        (begin
             ;llama a funcion de pedir carta para dibujarla
-            (colocar-imagen '(8 "8" "T") 10 10)
             (copy-viewport ventana2 ventana)
-            (control (get-mouse-click ventana) listaconinformacion)     
+            (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz))) cantPlantes)
+            (colocar-imagen (car matriz) (+ (caar matriz) 10) (+ (caar matriz) 10))
             ))
       
            
@@ -336,7 +335,7 @@
             ;llama a funcion de plantarse
             ((draw-pixmap ventana2) "cartas/card-0-1.png" (make-posn 485 600) "black")
             (copy-viewport ventana2 ventana)
-            (control (get-mouse-click ventana) listaconinformacion)
+            (control (get-mouse-click ventana) (list matriz (tomar-carta (random 52) (baraja 1))) 1)  
             ))
 
 
@@ -352,12 +351,15 @@
       ((and (>= (posn-x (mouse-click-posn click)) 50) (<= (posn-x (mouse-click-posn click))150)
             (>= (posn-y (mouse-click-posn click))250)  (<= (posn-y (mouse-click-posn click))280))
        (begin
+         (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caaddr matriz))) cantPlantes)
+            (colocar-imagen (car matriz) (+ (caar matriz) 10) (+ (caar matriz) 10))
             (close-viewport ventana)
             (close-graphics)))
       ;;Boton Plantarse
       ((and (>= (posn-x (mouse-click-posn click)) 50) (<= (posn-x (mouse-click-posn click))150)
             (>= (posn-y (mouse-click-posn click))290)  (<= (posn-y (mouse-click-posn click))320))
        (begin
+         (control (get-mouse-click ventana) (list matriz (tomar-carta (random 52) (baraja 1))) 1) 
             (close-viewport ventana)
             (close-graphics)))
 
@@ -378,24 +380,29 @@
             (>= (posn-y (mouse-click-posn click))250)  (<= (posn-y (mouse-click-posn click))280))
        (begin
             ;Verifica si aun puede pedir cartas, si puede procede, si no puede, manda un mensaje diciendo que no puede y hace la recursividad
-            
+            (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caadr matriz))) cantPlantes)
+            (colocar-imagen (car matriz) (+ (caar matriz) 10) (+ (caar matriz) 10))
             (close-viewport ventana)
             (close-graphics)))
       ;;Boton Plantarse
       ((and (>= (posn-x (mouse-click-posn click)) 900) (<= (posn-x (mouse-click-posn click))1000)
             (>= (posn-y (mouse-click-posn click))290)  (<= (posn-y (mouse-click-posn click))320))
        (begin
-            (pantalla-final '(20 21 11 24) listaNombres "EDUARDO" cantJugadores)
-            (close-viewport ventana)
+         (control (get-mouse-click ventana) (list matriz (tomar-carta (random 52) (baraja 1))) 1) 
             ))
+
+      ((equal? cantJugadores cantPlanes)
+       (pantalla-final '(20 21 11 24) listaNombres "EDUARDO" cantJugadores)
+            (close-viewport ventana))
+       
       
 
 
       
-      (else (control (get-mouse-click ventana) listaconinformacion)))
+      (else (control (get-mouse-click ventana) matriz puntuacion estado)))
    ) ;(control click listaconinformacion)
   
-  (control (get-mouse-click ventana) '())
+  (control (get-mouse-click ventana) '() '() 0)
   ;:::::::::::::::::::::::::::::::::::::::::::::::::;:::::::::::::::::::::::::::::::::::::::::::::::
 )
 
