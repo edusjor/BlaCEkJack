@@ -323,7 +323,10 @@
        (begin
             ;llama a funcion de pedir carta para dibujarla
             (copy-viewport ventana2 ventana)
-            (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz))) cantPlantes)
+            (cond((>= (cadddr puntuacion) 17)
+               (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) puntuacion) cantPlantes))
+              (else
+               (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz))) cantPlantes)))
             (colocar-imagen (car matriz) (+ (caar matriz) 10) (+ (caar matriz) 10))
             ))
       
@@ -351,7 +354,10 @@
       ((and (>= (posn-x (mouse-click-posn click)) 50) (<= (posn-x (mouse-click-posn click))150)
             (>= (posn-y (mouse-click-posn click))250)  (<= (posn-y (mouse-click-posn click))280))
        (begin
-         (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caaddr matriz))) cantPlantes)
+        (cond((>= (cadddr puntuacion) 17)
+               (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) puntuacion) cantPlantes))
+              (else
+               (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caaddr matriz))) cantPlantes)))
             (colocar-imagen (car matriz) (+ (caar matriz) 10) (+ (caar matriz) 10))
             (close-viewport ventana)
             (close-graphics)))
@@ -380,7 +386,10 @@
             (>= (posn-y (mouse-click-posn click))250)  (<= (posn-y (mouse-click-posn click))280))
        (begin
             ;Verifica si aun puede pedir cartas, si puede procede, si no puede, manda un mensaje diciendo que no puede y hace la recursividad
-            (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caadr matriz))) cantPlantes)
+         (cond((>= (cadddr puntuacion) 17)
+               (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caaddr matriz)) puntuacion) cantPlantes))
+              (else
+               (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caaddr matriz)) (+ puntuacion (car(cadddr matriz))) cantPlantes)))
             (colocar-imagen (car matriz) (+ (caar matriz) 10) (+ (caar matriz) 10))
             (close-viewport ventana)
             (close-graphics)))
@@ -391,7 +400,7 @@
          (control (get-mouse-click ventana) (list matriz (tomar-carta (random 52) (baraja 1))) 1) 
             ))
 
-      ((equal? cantJugadores cantPlanes)
+      ((equal? cantJugadores cantPlantes)
        (pantalla-final '(20 21 11 24) listaNombres "EDUARDO" cantJugadores)
             (close-viewport ventana))
        

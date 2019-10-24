@@ -1,5 +1,12 @@
 #lang racket
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;LOGICA DEL JUEGO;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;Función baraja
+;Recibe un id diferente de cero y devuelve la baraja
 (define(baraja id)
   (cond((zero? id)
         '())
@@ -18,6 +25,8 @@
                        (10 "Queen" "D")(10 "Queen" "S")(10 "Queen" "T")(10 "Queen" "H")
                        (10 "King" "D")(10 "King" "S")(10 "King" "T")(10 "King" "H")))))
 
+;Función tomar carta
+;Recibe un índice y devuelve la carta perteneciente a ese índice dentro de la baraja
 (define(tomar-carta indice baraja)
   (cond((null? baraja)
         #f)
@@ -30,6 +39,8 @@
        (else
         (tomar-carta-aux (- indice 1) (cdr baraja)))))
 
+;Función tomar carta
+;Recibe una carta y elimina la aparición de la carta dentro de la baraja
 (define(eliminar carta baraja)
   (cond((null? baraja)
         '())
@@ -42,24 +53,26 @@
        (else
         (cons (car baraja) (eliminar-aux carta (cdr baraja))))))
 
-(define(aleatorio a b)
-  (cond((zero? (random 2))
-        a)
-       (else
-        b)))
-
+;Función barajar
+;Recibe una carta y genera una nueva baraja cuyos valores serán distintos respecto a la otra
+;No está al 100
 (define(barajar indice baraja)
   (cond((null? baraja)
         '())
        (else
         (cons (tomar-carta indice baraja) (barajar (random 52) baraja)))))
 
+;Función eliminados
+;Recibe una carta y la baraja y elimina la aparición de esa carta en la baraja colocándola en una nueva lista
 (define(eliminados carta baraja)
   (cond((null? baraja)
         (list carta))
        (else
         (cons (car carta) (eliminados carta (cdr baraja))))))
 
+;Función eliminado?
+;Recibe una carta y una lista de eliminados proveniente de la función anterior
+;Verifica que la carta no esté dentro de la baraja 
 (define(eliminado? carta eliminados)
   (cond((equal? (car eliminados) carta)
         #t)
@@ -68,6 +81,9 @@
        (else
         (eliminado? carta (cdr eliminados)))))
 
+;Función puntuación
+;Recibe las cartas a las cuales se les espera obtener la puntuación
+;Suma los valores de las cartas y lo retorna como puntuación
 (define(puntuacion cartas)
   (cond((null? cartas)
         0)
@@ -79,7 +95,11 @@
         puntos)
        (else
         (puntuacion-aux (+ puntos (caar cartas)) (cdr cartas)))))
-        
+
+;Función crupier
+;Es una representación en la lógica del crupier del juego
+;Recibe como parámetros su estado en el juego, las cartas que posee y su puntuación
+;Retorna una lista con estos mismos parámetros una vez jugado
 (define(crupier estado cartas puntuacion)
   (cond((equal? estado "Plantado")
         (append (list puntuacion) (cons (tomar-carta (random 52) (baraja 1)) cartas)))
@@ -88,18 +108,28 @@
        (else
         (crupier "Jugando" (+ puntuacion (caar cartas)) (cdr (cons (tomar-carta (random 52) (baraja 1)) cartas))))))
 
+;Función jugador
+;Es una representación en la lógica del jugador
+;Recibe como parámetros su estado en el juego, las cartas que posee y su puntuación
+;Retorna una lista con estos mismos parámetros una vez jugado
 (define(jugador estado cartas puntuacion)
   (cond((equal? estado "Plantado")
         (append (list puntuacion) (cons (tomar-carta (random 52) (baraja 1)) cartas)))
        (else
         (jugador "Jugando" (+ puntuacion (caar cartas)) (cdr (cons (tomar-carta (random 52) (baraja 1)) cartas))))))
 
+;Función largo
+;Recibe una lista y retorna su longitud
 (define(largo lista)
   (cond((null? lista)
         0)
        (else
         (+ 1 (largo (cdr lista))))))
 
+;Función ganador
+;Recibe a los jugadores y al crupier
+;Ejecuta una validación de los mismos, para decidir al ganador del juego
+;Retorna al ganador del juego
 (define(ganador jugadores crupier)
   (cond((null? jugadores)
         "Gana crupier por omisión")
