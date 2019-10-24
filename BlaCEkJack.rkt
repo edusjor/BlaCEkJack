@@ -323,7 +323,7 @@
        (begin
             ;llama a funcion de pedir carta para dibujarla
             (copy-viewport ventana2 ventana)
-            (cond((>= (cadddr puntuacion) 17)
+            (cond((>= (cadr puntuacion) 17)
                (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) puntuacion) cantPlantes))
               (else
                (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz))) cantPlantes)))
@@ -354,11 +354,12 @@
       ((and (>= (posn-x (mouse-click-posn click)) 50) (<= (posn-x (mouse-click-posn click))150)
             (>= (posn-y (mouse-click-posn click))250)  (<= (posn-y (mouse-click-posn click))280))
        (begin
-        (cond((>= (cadddr puntuacion) 17)
+        (cond((>= (caddr puntuacion) 17)
                (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) puntuacion) cantPlantes))
               (else
                (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caaddr matriz))) cantPlantes)))
             (colocar-imagen (car matriz) (+ (caar matriz) 10) (+ (caar matriz) 10))
+            (colocar-imagen (cadr matriz) (+ (caadr matriz) 100) (+ (caadr matriz) 100))
             (close-viewport ventana)
             (close-graphics)))
       ;;Boton Plantarse
@@ -391,6 +392,8 @@
               (else
                (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caaddr matriz)) (+ puntuacion (car(cadddr matriz))) cantPlantes)))
             (colocar-imagen (car matriz) (+ (caar matriz) 10) (+ (caar matriz) 10))
+            (colocar-imagen (cadr matriz) (+ (caadr matriz) 100) (+ (caadr matriz) 100))
+            (colocar-imagen (caddr matriz) (+ (caaddr matriz) 200) (+ (caaddr matriz) 200))
             (close-viewport ventana)
             (close-graphics)))
       ;;Boton Plantarse
