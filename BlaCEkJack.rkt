@@ -322,27 +322,29 @@
             (>= (posn-y (mouse-click-posn click))350)  (<= (posn-y (mouse-click-posn click))380))
        (begin
             ;llama a funcion de pedir carta para dibujarla
-            (copy-viewport ventana2 ventana)
+            ;
             (cond((>= (cadr puntuacion) 17)
                (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) puntuacion) cantPlantes))
               (else
                (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz))) cantPlantes)))
             (colocar-imagen (car matriz) (+ (caar matriz) 10) (+ (caar matriz) 10))
+            (copy-viewport ventana2 ventana)  
             ))
-      
+        
            
       ;;Boton Plantarse
       ((and (>= (posn-x (mouse-click-posn click)) 470) (<= (posn-x (mouse-click-posn click))570)
             (>= (posn-y (mouse-click-posn click))390)  (<= (posn-y (mouse-click-posn click))420))
        (begin
             ;llama a funcion de plantarse
-            ((draw-pixmap ventana2) "cartas/card-0-1.png" (make-posn 485 600) "black")
+            ;((draw-pixmap ventana2) "cartas/card-0-1.png" (make-posn 485 600) "black")
+            ; si equal cant plantes es igual al cant jugs pasar a siguiente ventantana
             (copy-viewport ventana2 ventana)
-            (control (get-mouse-click ventana) (list matriz (tomar-carta (random 52) (baraja 1))) 1)  
-            ))
+            (control (get-mouse-click ventana) (list matriz (tomar-carta (random 52) (baraja 1))) (+ cantPlantes 1))  
+            ))   
 
 
-
+ 
 
 
 
@@ -388,14 +390,16 @@
        (begin
             ;Verifica si aun puede pedir cartas, si puede procede, si no puede, manda un mensaje diciendo que no puede y hace la recursividad
          (cond((>= (cadddr puntuacion) 17)
-               (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caaddr matriz)) puntuacion) cantPlantes))
+               (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caaddr matriz)) puntuacion) cantPlantes)
+               (colocar-imagen (car matriz) (+ (caar matriz) 10) (+ (caar matriz) 10))
+               (colocar-imagen (cadr matriz) (+ (caadr matriz) 100) (+ (caadr matriz) 100))
+               (colocar-imagen (caddr matriz) (+ (caaddr matriz) 200) (+ (caaddr matriz) 200)))
               (else
                (control (get-mouse-click ventana) (list (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1)) (tomar-carta (random 52) (baraja 1))) (list (+ puntuacion (caar matriz)) (+ puntuacion (caadr matriz)) (+ puntuacion (caaddr matriz)) (+ puntuacion (car(cadddr matriz))) cantPlantes)))
-            (colocar-imagen (car matriz) (+ (caar matriz) 10) (+ (caar matriz) 10))
-            (colocar-imagen (cadr matriz) (+ (caadr matriz) 100) (+ (caadr matriz) 100))
-            (colocar-imagen (caddr matriz) (+ (caaddr matriz) 200) (+ (caaddr matriz) 200))
-            (close-viewport ventana)
-            (close-graphics)))
+            
+            ;(close-viewport ventana)
+            ;(close-graphics)
+            )))
       ;;Boton Plantarse
       ((and (>= (posn-x (mouse-click-posn click)) 900) (<= (posn-x (mouse-click-posn click))1000)
             (>= (posn-y (mouse-click-posn click))290)  (<= (posn-y (mouse-click-posn click))320))
@@ -404,15 +408,14 @@
             ))
 
       ((equal? cantJugadores cantPlantes)
-       (pantalla-final '(20 21 11 24) listaNombres "EDUARDO" cantJugadores)
+       (pantalla-final puntuacion listaNombres ganador cantJugadores)
             (close-viewport ventana))
        
       
 
-
       
-      (else (control (get-mouse-click ventana) matriz puntuacion estado)))
-   ) ;(control click listaconinformacion)
+      (else (control (get-mouse-click ventana) matriz puntuacion cantPlantes)))
+   ) ;(control click
   
   (control (get-mouse-click ventana) '() '() 0)
   ;:::::::::::::::::::::::::::::::::::::::::::::::::;:::::::::::::::::::::::::::::::::::::::::::::::
